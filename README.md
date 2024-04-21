@@ -17,7 +17,7 @@
    - 执行 pip3 install -r packages.txt 安装依赖
    - 执行 `python bilibili_movie_scraper.py` 来运行脚本。
    - 脚本会自动从哔哩哔哩上爬取高评分的电影信息。
-
+   - Linux armv7l 和 Windwos10以上 amd64可以到发行页下载可执行文件
 3. **下载电影：**
 
    - 爬取完电影信息后，脚本会展示高评分电影列表。
