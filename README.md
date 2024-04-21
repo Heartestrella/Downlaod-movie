@@ -65,6 +65,13 @@ Copy code
 
 作者不对本脚本的误用、滥用或非法使用负责。
 
+## 问题
+
+![image](https://github.com/Heartestrella/Downlaod-movie/assets/110215026/6548cf52-4438-4f06-a49b-03463011ee03)
+1.部分影片可能存在要付费购买的问题导致只有6分钟
+2.其余版本性问题可以查看分支
+
+
 ## 感谢
 
 特别感谢 [Bilibili Downloader CLI](https://github.com/open17/Bilibili-Downloader-Cli) 项目提供的灵感和参考。
