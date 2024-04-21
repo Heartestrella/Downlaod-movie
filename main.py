@@ -7,11 +7,13 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
 from tqdm import tqdm
 
 
 def load_config():
     data = {
+        "html_path": "",
         "sorce": 9.5,
         "save_path": "",
         "qn": 80,
@@ -43,9 +45,9 @@ class get_full_page:
 
             self.driver = webdriver.Edge()
             self.driver.get(self.url)
-            for i in range(5):
+            for i in range(10):
                 self.driver.execute_script("window.scrollBy(0, 1000);")
-                time.sleep(5)
+                time.sleep(3)
 
             page_content = self.driver.page_source
             self.driver.quit()
@@ -79,8 +81,13 @@ class BilibiliMovieScraper:
         #  self.headers = headers
         self.movie_info = []
         full_page = get_full_page(url)
-        self.page_content = full_page.main()
-        open("full_page.html", encoding="utf-8", mode="a").write(self.page_content)
+        if config["html_path"]:
+            print("使用手动指定的HTML路径解析...")
+            with open(config["html_path"], encoding="utf-8") as f:
+                self.page_content = f.read()
+        else:
+            self.page_content = full_page.main()
+            open("full_page.html", encoding="utf-8", mode="a").write(self.page_content)
 
     def scrape_movie_info(self):
         # response = httpx.get(self.url, headers=self.headers)
@@ -174,7 +181,7 @@ class BilibiliMovieScraper:
                         id = f"ep{target}"
                         if downlaod.get_epid_video(id, name):
                             print(f"已经完成 {name}的下载 30s后自动下载")
-                            time.sleep(30)
+                        # time.sleep(3)
                     else:
                         print("没匹配到id")
 
@@ -197,28 +204,35 @@ class Downloader:
             print(f"电影 {name} 已经存在")
             return True
         else:
-            response = requests.get(url, headers=self.config["headers"], stream=True)
-            if response.status_code == 200:
-                content_length = int(response.headers.get("Content-Length", 0))
-                with tqdm(
-                    total=content_length,
-                    unit="B",
-                    unit_scale=True,
-                    desc=name,
-                    file=sys.stdout,
-                ) as pbar:
+            try:
+                response = requests.get(
+                    url, headers=self.config["headers"], stream=True
+                )
+                if response.status_code == 200:
+                    content_length = int(response.headers.get("Content-Length", 0))
+                    with tqdm(
+                        total=content_length,
+                        unit="B",
+                        unit_scale=True,
+                        desc=name,
+                        file=sys.stdout,
+                    ) as pbar:
 
-                    with open(full_path, "wb") as file:
-                        for chunk in response.iter_content(
-                            chunk_size=self.config["chunk_size"]
-                        ):
-                            file.write(chunk)
-                            pbar.update(len(chunk))
-                print("\n下载完成")
-                return True
-            else:
-                print(name, "下载失败")
-                return False
+                        with open(full_path, "wb") as file:
+                            for chunk in response.iter_content(
+                                chunk_size=self.config["chunk_size"]
+                            ):
+                                file.write(chunk)
+                                pbar.update(len(chunk))
+                    print("\n下载完成")
+                    return True
+                else:
+                    print(name, "下载失败")
+                    return False
+            except RequestException as e:
+                print(f"出现错误 : {e} 1分钟后再次尝试!")
+                time.sleep(60)
+                self.download_video(url, name)
 
 
 if __name__ == "__main__":
