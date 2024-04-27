@@ -79,6 +79,10 @@ Copy code
 
 Version 1.3.0:
 1. 支持扫码自动获取Cookie
+
+![ae5959b7845ae7493d9a85626cc09cc](https://github.com/Heartestrella/Downlaod-movie/assets/110215026/6389a435-a1d6-42e9-91e1-051b27a5d0dd)
+
+
 2. 支持自定义获取电影CD的功能
 
 ## 感谢
